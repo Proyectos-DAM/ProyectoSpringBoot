@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Suscripción</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
+        }
+        .card-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .card-body {
+            padding: 25px;
+        }
+        .seccion {
+            margin-bottom: 25px;
+        }
+        .seccion h3 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .info-item {
+            padding: 12px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .info-item .label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .info-item .valor {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+        .estado {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .estado-ACTIVA {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        .estado-CANCELADA {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        .estado-IMPAGO {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+        .estado-EXPIRADA {
+            background-color: #EFEBE9;
+            color: #4E342E;
+        }
+        .acciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-back {
+            background-color: #757575;
+            color: white;
+        }
+        .btn-activar {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-cancelar {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-renovar {
+            background-color: #2196F3;
+            color: white;
+        }
+        .btn-toggle {
+            background-color: #FF9800;
+            color: white;
+        }
+        .btn-historial {
+            background-color: #9C27B0;
+            color: white;
+        }
+        .facturas-tabla {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .facturas-tabla th, .facturas-tabla td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .facturas-tabla th {
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 12px;
+        }
+        .estado-factura {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .estado-factura.EMITIDA {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+        .estado-factura.PAGADA {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        .estado-factura.ANULADA {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>Suscripción <span th:text="'#' + ${suscripcion.id}">#1</span></h1>
+                <span class="estado" th:classappend="'estado-' + ${suscripcion.estado}" th:text="${suscripcion.estado}">ACTIVA</span>
+            </div>
+
+            <div class="card-body">
+                <div class="seccion">
+                    <h3>Información del Usuario</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="label">Email</div>
+                            <div class="valor" th:text="${suscripcion.usuario.email}">usuario@email.com</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">País</div>
+                            <div class="valor" th:text="${suscripcion.usuario.perfil != null ? suscripcion.usuario.perfil.pais : 'No especificado'}">España</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seccion">
+                    <h3>Detalles del Plan</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="label">Plan</div>
+                            <div class="valor" th:text="${suscripcion.plan.nombre}">Premium</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Tipo</div>
+                            <div class="valor" th:text="${suscripcion.plan.tipo}">PREMIUM</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Precio Mensual</div>
+                            <div class="valor" th:text="${suscripcion.plan.precioMensual} + ' €'">9.99 €</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seccion">
+                    <h3>Estado de la Suscripción</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="label">Fecha de Inicio</div>
+                            <div class="valor" th:text="${#temporals.format(suscripcion.fechaInicio, 'dd/MM/yyyy')}">01/01/2026</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Fecha de Fin</div>
+                            <div class="valor" th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'dd/MM/yyyy') : 'Sin definir'}">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Renovación Automática</div>
+                            <div class="valor" th:text="${suscripcion.renovacionAutomatica ? '✓ Activada' : '✗ Desactivada'}">✓ Activada</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Próxima Renovación</div>
+                            <div class="valor" th:text="${suscripcion.proximaRenovacion != null ? #temporals.format(suscripcion.proximaRenovacion, 'dd/MM/yyyy') : 'N/A'}">01/02/2026</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seccion" th:if="${!#lists.isEmpty(suscripcion.facturas)}">
+                    <h3>Facturas Asociadas</h3>
+                    <table class="facturas-tabla">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Importe</th>
+                                <th>Impuesto</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="factura : ${suscripcion.facturas}">
+                                <td th:text="'#' + ${factura.id}">#1</td>
+                                <td th:text="${#temporals.format(factura.fechaEmision, 'dd/MM/yyyy')}">01/01/2026</td>
+                                <td th:text="${factura.importe} + ' €'">9.99 €</td>
+                                <td th:text="${factura.importeImpuesto} + ' €'">2.10 €</td>
+                                <td th:text="${factura.importeTotal} + ' €'">12.09 €</td>
+                                <td>
+                                    <span class="estado-factura" th:classappend="${factura.estado}" th:text="${factura.estado}">PAGADA</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="acciones">
+                    <a href="/suscripciones" class="btn btn-back">← Volver al Listado</a>
+
+                    <form th:if="${suscripcion.estado.name() != 'ACTIVA'}" th:action="@{/suscripciones/{id}/activar(id=${suscripcion.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-activar">Activar Suscripción</button>
+                    </form>
+
+                    <form th:if="${suscripcion.estado.name() == 'ACTIVA'}" th:action="@{/suscripciones/{id}/cancelar(id=${suscripcion.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-cancelar">Cancelar Suscripción</button>
+                    </form>
+
+                    <form th:if="${suscripcion.estado.name() == 'ACTIVA'}" th:action="@{/suscripciones/{id}/renovar(id=${suscripcion.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-renovar">Renovar Ahora</button>
+                    </form>
+
+                    <form th:action="@{/suscripciones/{id}/renovacion-automatica(id=${suscripcion.id})}" method="post" style="display:inline;">
+                        <input type="hidden" name="habilitar" th:value="${!suscripcion.renovacionAutomatica}">
+                        <button type="submit" class="btn btn-toggle"
+                                th:text="${suscripcion.renovacionAutomatica ? 'Desactivar Renovación Auto' : 'Activar Renovación Auto'}">
+                            Toggle Renovación
+                        </button>
+                    </form>
+
+                    <a th:href="@{/admin/auditoria/suscripcion/{id}(id=${suscripcion.id})}" class="btn btn-historial">Ver Historial de Cambios</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

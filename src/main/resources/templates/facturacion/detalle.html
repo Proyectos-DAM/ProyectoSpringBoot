@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Factura</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .factura-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .factura-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+        }
+        .factura-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .factura-header .fecha {
+            opacity: 0.9;
+        }
+        .factura-body {
+            padding: 30px;
+        }
+        .seccion {
+            margin-bottom: 25px;
+        }
+        .seccion h3 {
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .info-item {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .info-item .label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .info-item .valor {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+        .desglose {
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .desglose-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .desglose-item:last-child {
+            border-bottom: none;
+        }
+        .desglose-item.total {
+            background-color: #f9f9f9;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .estado {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .estado-EMITIDA {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+        .estado-PAGADA {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        .estado-ANULADA {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        .acciones {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-back {
+            background-color: #757575;
+            color: white;
+        }
+        .btn-pagar {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-anular {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="factura-card">
+            <div class="factura-header">
+                <h1>Factura <span th:text="'#' + ${factura.id}">#1</span></h1>
+                <div class="fecha" th:text="'Emitida el ' + ${#temporals.format(factura.fechaEmision, 'dd/MM/yyyy')}">
+                    Emitida el 01/01/2026
+                </div>
+            </div>
+
+            <div class="factura-body">
+                <div class="seccion">
+                    <h3>Estado de la Factura</h3>
+                    <span class="estado" th:classappend="'estado-' + ${factura.estado}" th:text="${factura.estado}">EMITIDA</span>
+                </div>
+
+                <div class="seccion">
+                    <h3>Información de la Suscripción</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="label">ID Suscripción</div>
+                            <div class="valor" th:text="'#' + ${factura.suscripcion.id}">#1</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Plan</div>
+                            <div class="valor" th:text="${factura.suscripcion.plan.nombre}">Premium</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Usuario</div>
+                            <div class="valor" th:text="${factura.suscripcion.usuario.email}">usuario@email.com</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Estado Suscripción</div>
+                            <div class="valor" th:text="${factura.suscripcion.estado}">ACTIVA</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seccion">
+                    <h3>Desglose de Importes</h3>
+                    <div class="desglose">
+                        <div class="desglose-item">
+                            <span>Importe Base</span>
+                            <span th:text="${#numbers.formatDecimal(factura.importe, 1, 2)} + ' €'">10.00 €</span>
+                        </div>
+                        <div class="desglose-item">
+                            <span>
+                                Impuesto (<span th:text="${factura.paisImpuesto}">ES</span> -
+                                <span th:text="${factura.tasaImpuesto} + '%'">21%</span>)
+                            </span>
+                            <span th:text="${#numbers.formatDecimal(factura.importeImpuesto, 1, 2)} + ' €'">2.10 €</span>
+                        </div>
+                        <div class="desglose-item total">
+                            <span>TOTAL</span>
+                            <span th:text="${#numbers.formatDecimal(factura.importeTotal, 1, 2)} + ' €'">12.10 €</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="acciones">
+                    <a href="/facturacion" class="btn btn-back">← Volver al Listado</a>
+                    <form th:if="${factura.estado.name() == 'EMITIDA'}" th:action="@{/facturacion/{id}/pagar(id=${factura.id})}" method="post">
+                        <button type="submit" class="btn btn-pagar">Marcar como Pagada</button>
+                    </form>
+                    <form th:if="${factura.estado.name() == 'EMITIDA'}" th:action="@{/facturacion/{id}/anular(id=${factura.id})}" method="post">
+                        <button type="submit" class="btn btn-anular">Anular Factura</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

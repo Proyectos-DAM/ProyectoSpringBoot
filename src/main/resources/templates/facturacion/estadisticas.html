@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas de Facturación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 25px;
+            text-align: center;
+        }
+        .stat-card .icono {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .stat-card .valor {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        .stat-card .label {
+            font-size: 14px;
+            color: #666;
+        }
+        .stat-card.warning .valor {
+            color: #FF9800;
+        }
+        .stat-card.info .valor {
+            color: #2196F3;
+        }
+        .stat-card.success .valor {
+            color: #4CAF50;
+        }
+        .resumen-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-top: 20px;
+        }
+        .resumen-card h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .progress-bar-container {
+            margin-bottom: 20px;
+        }
+        .progress-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .progress-bar {
+            height: 25px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        .progress-bar-fill.pagadas {
+            background-color: #4CAF50;
+        }
+        .progress-bar-fill.pendientes {
+            background-color: #FF9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Estadísticas de Facturación</h1>
+
+        <div class="nav-links">
+            <a href="/facturacion">Todas las Facturas</a>
+            <a href="/facturacion/pendientes">Pendientes</a>
+            <a href="/suscripciones">Suscripciones</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card info">
+                <div class="icono">📄</div>
+                <div class="valor" th:text="${totalFacturas}">0</div>
+                <div class="label">Total de Facturas</div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="icono">✅</div>
+                <div class="valor" th:text="${facturasPagadas}">0</div>
+                <div class="label">Facturas Pagadas</div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="icono">⏳</div>
+                <div class="valor" th:text="${facturasPendientes}">0</div>
+                <div class="label">Facturas Pendientes</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icono">💰</div>
+                <div class="valor" th:text="${#numbers.formatDecimal(totalFacturado, 1, 2)} + ' €'">0.00 €</div>
+                <div class="label">Total Facturado</div>
+            </div>
+
+            <div class="stat-card info">
+                <div class="icono">🏛️</div>
+                <div class="valor" th:text="${#numbers.formatDecimal(totalImpuestos, 1, 2)} + ' €'">0.00 €</div>
+                <div class="label">Total en Impuestos</div>
+            </div>
+        </div>
+
+        <div class="resumen-card">
+            <h2>Estado de Cobro</h2>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar-label">
+                    <span>Facturas Pagadas</span>
+                    <span th:text="${totalFacturas > 0 ? #numbers.formatDecimal((facturasPagadas * 100.0) / totalFacturas, 1, 1) + '%' : '0%'}">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill pagadas"
+                         th:style="'width: ' + ${totalFacturas > 0 ? (facturasPagadas * 100.0) / totalFacturas : 0} + '%'"></div>
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar-label">
+                    <span>Facturas Pendientes</span>
+                    <span th:text="${totalFacturas > 0 ? #numbers.formatDecimal((facturasPendientes * 100.0) / totalFacturas, 1, 1) + '%' : '0%'}">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill pendientes"
+                         th:style="'width: ' + ${totalFacturas > 0 ? (facturasPendientes * 100.0) / totalFacturas : 0} + '%'"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

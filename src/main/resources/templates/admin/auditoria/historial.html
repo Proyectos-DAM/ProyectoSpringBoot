@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Historial de Auditoría</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .subtitulo {
+            color: #aaa;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e94560;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #16213e;
+            color: #eee;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 10px;
+            border: 1px solid #0f3460;
+        }
+        .nav-links a:hover {
+            background-color: #0f3460;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #0f3460;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            background-color: #16213e;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #0f3460;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e94560;
+            border: 2px solid #1a1a2e;
+        }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .revision-badge {
+            background-color: #0f3460;
+            color: #e94560;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .fecha {
+            color: #aaa;
+            font-size: 13px;
+        }
+        .tipo-accion {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        .tipo-CREACIÓN {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+        .tipo-MODIFICACIÓN {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+        }
+        .tipo-ELIMINACIÓN {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+        .datos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .dato-item {
+            background-color: #1a1a2e;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .dato-item .label {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 3px;
+        }
+        .dato-item .valor {
+            font-size: 14px;
+            color: #eee;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            background-color: #16213e;
+            border-radius: 8px;
+        }
+        .ver-revision {
+            color: #e94560;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .ver-revision:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${titulo}">Historial de Auditoría</h1>
+        <p class="subtitulo">
+            <span th:text="${tipoEntidad}">Entidad</span> #<span th:text="${entityId}">1</span> -
+            Total de revisiones: <span th:text="${#lists.size(historial)}">0</span>
+        </p>
+
+        <div class="nav-links">
+            <a href="/admin/auditoria">← Volver al Panel</a>
+            <a href="/facturacion">Facturación</a>
+            <a href="/suscripciones">Suscripciones</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(historial)}" class="empty-message">
+            <p>No se encontró historial para esta entidad.</p>
+        </div>
+
+        <div class="timeline" th:unless="${#lists.isEmpty(historial)}">
+            <div class="timeline-item" th:each="registro : ${historial}">
+                <div class="timeline-header">
+                    <div>
+                        <span class="revision-badge" th:text="'Revisión #' + ${registro.numeroRevision}">Revisión #1</span>
+                        <span class="tipo-accion" th:classappend="'tipo-' + ${registro.tipoAccion}" th:text="${registro.tipoAccion}">MODIFICACIÓN</span>
+                    </div>
+                    <span class="fecha" th:text="${#dates.format(registro.fecha, 'dd/MM/yyyy HH:mm:ss')}">01/01/2026 12:00:00</span>
+                </div>
+
+                <!-- Para Usuario -->
+                <div th:if="${tipoEntidad == 'Usuario'}" class="datos-grid">
+                    <div class="dato-item">
+                        <div class="label">ID</div>
+                        <div class="valor" th:text="${registro.entidad.id}">1</div>
+                    </div>
+                    <div class="dato-item">
+                        <div class="label">Email</div>
+                        <div class="valor" th:text="${registro.entidad.email}">usuario@email.com</div>
+                    </div>
+                </div>
+
+                <!-- Para Suscripción -->
+                <div th:if="${tipoEntidad == 'Suscripción'}" class="datos-grid">
+                    <div class="dato-item">
+                        <div class="label">ID</div>
+                        <div class="valor" th:text="${registro.entidad.id}">1</div>
+                    </div>
+                    <div class="dato-item">
+                        <div class="label">Estado</div>
+                        <div class="valor" th:text="${registro.entidad.estado}">ACTIVA</div>
+                    </div>
+                    <div class="dato-item">
+                        <div class="label">Fecha Inicio</div>
+                        <div class="valor" th:text="${registro.entidad.fechaInicio}">2026-01-01</div>
+                    </div>
+                    <div class="dato-item">
+                        <div class="label">Fecha Fin</div>
+                        <div class="valor" th:text="${registro.entidad.fechaFin != null ? registro.entidad.fechaFin : 'Sin definir'}">-</div>
+                    </div>
+                    <div class="dato-item">
+                        <div class="label">Renovación Automática</div>
+                        <div class="valor" th:text="${registro.entidad.renovacionAutomatica ? 'Sí' : 'No'}">Sí</div>
+                    </div>
+                    <div class="dato-item">
+                        <div class="label">Próxima Renovación</div>
+                        <div class="valor" th:text="${registro.entidad.proximaRenovacion != null ? registro.entidad.proximaRenovacion : 'N/A'}">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

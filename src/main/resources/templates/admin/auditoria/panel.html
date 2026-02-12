@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Panel de Auditoría</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e94560;
+        }
+        .admin-badge {
+            display: inline-block;
+            background-color: #e94560;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #16213e;
+            color: #eee;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 10px;
+            border: 1px solid #0f3460;
+            transition: background-color 0.3s;
+        }
+        .nav-links a:hover {
+            background-color: #0f3460;
+        }
+        .busqueda {
+            background-color: #16213e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #0f3460;
+        }
+        .busqueda h3 {
+            margin-bottom: 15px;
+            color: #e94560;
+        }
+        .busqueda form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .busqueda-grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .busqueda-grupo label {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .busqueda-grupo input, .busqueda-grupo select {
+            padding: 10px 15px;
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            background-color: #1a1a2e;
+            color: #eee;
+            font-size: 14px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #e94560;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #c73e54;
+        }
+        table {
+            width: 100%;
+            background-color: #16213e;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #0f3460;
+        }
+        th {
+            background-color: #0f3460;
+            color: #e94560;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        tr:hover {
+            background-color: #1a1a2e;
+        }
+        .tipo-accion {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .tipo-CREACIÓN {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+        .tipo-MODIFICACIÓN {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+        }
+        .tipo-ELIMINACIÓN {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+        .tipo-entidad {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            background-color: #0f3460;
+            color: #eee;
+        }
+        .fecha {
+            color: #aaa;
+            font-size: 13px;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            background-color: #16213e;
+            border-radius: 8px;
+        }
+        .ver-link {
+            color: #e94560;
+            text-decoration: none;
+        }
+        .ver-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Panel de Auditoría <span class="admin-badge">ADMIN</span></h1>
+
+        <div class="nav-links">
+            <a href="/facturacion">Facturación</a>
+            <a href="/suscripciones">Suscripciones</a>
+            <a href="/admin/auditoria">Inicio Auditoría</a>
+        </div>
+
+        <div class="busqueda">
+            <h3>Buscar Historial de Entidad</h3>
+            <form action="/admin/auditoria/buscar" method="get">
+                <div class="busqueda-grupo">
+                    <label for="tipoEntidad">Tipo de Entidad</label>
+                    <select id="tipoEntidad" name="tipoEntidad" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="usuario">Usuario</option>
+                        <option value="suscripcion">Suscripción</option>
+                    </select>
+                </div>
+                <div class="busqueda-grupo">
+                    <label for="entityId">ID de la Entidad</label>
+                    <input type="number" id="entityId" name="entityId" required min="1" placeholder="Ej: 1">
+                </div>
+                <button type="submit" class="btn btn-primary">Buscar Historial</button>
+            </form>
+        </div>
+
+        <h2 style="margin-bottom: 15px; color: #e94560;">📋 Cambios Recientes</h2>
+
+        <div th:if="${#lists.isEmpty(cambios)}" class="empty-message">
+            <p>No hay cambios registrados en el sistema.</p>
+        </div>
+
+        <table th:unless="${#lists.isEmpty(cambios)}">
+            <thead>
+                <tr>
+                    <th>Revisión</th>
+                    <th>Fecha y Hora</th>
+                    <th>Tipo de Entidad</th>
+                    <th>ID</th>
+                    <th>Acción</th>
+                    <th>Descripción</th>
+                    <th>Ver Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cambio : ${cambios}">
+                    <td th:text="'#' + ${cambio.numeroRevision}">#1</td>
+                    <td class="fecha" th:text="${#dates.format(cambio.fecha, 'dd/MM/yyyy HH:mm:ss')}">01/01/2026 12:00:00</td>
+                    <td>
+                        <span class="tipo-entidad" th:text="${cambio.tipoEntidad}">Usuario</span>
+                    </td>
+                    <td th:text="${cambio.entityId}">1</td>
+                    <td>
+                        <span class="tipo-accion" th:classappend="'tipo-' + ${cambio.tipoAccion}" th:text="${cambio.tipoAccion}">MODIFICACIÓN</span>
+                    </td>
+                    <td th:text="${cambio.descripcion}">Descripción del cambio</td>
+                    <td>
+                        <a th:if="${cambio.tipoEntidad == 'Usuario'}"
+                           th:href="@{/admin/auditoria/usuario/{id}(id=${cambio.entityId})}"
+                           class="ver-link">Ver Historial →</a>
+                        <a th:if="${cambio.tipoEntidad == 'Suscripción'}"
+                           th:href="@{/admin/auditoria/suscripcion/{id}(id=${cambio.entityId})}"
+                           class="ver-link">Ver Historial →</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+
