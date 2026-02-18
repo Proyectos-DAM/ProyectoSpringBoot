@@ -195,6 +195,7 @@
                 </div>
 
                 <div class="acciones">
+                    <a href="/" class="btn btn-back" style="background:#9C27B0;">🏠 Inicio</a>
                     <a href="/facturacion" class="btn btn-back">← Volver al Listado</a>
                     <form th:if="${factura.estado.name() == 'EMITIDA'}" th:action="@{/facturacion/{id}/pagar(id=${factura.id})}" method="post">
                         <button type="submit" class="btn btn-pagar">Marcar como Pagada</button>

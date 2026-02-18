@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-// Servicio para gestión de facturas con cálculo de impuestos
 @Service
 public class FacturaService {
 

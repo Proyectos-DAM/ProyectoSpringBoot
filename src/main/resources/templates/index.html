@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RefugioApp - Panel de Control</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .card-title { color: #666; font-size: 14px; margin-bottom: 5px; }
+        .card-value { font-size: 2.5rem; font-weight: bold; color: #333; }
+        .card-subtitle { color: #999; font-size: 13px; margin-top: 5px; }
+
+        /* Card Colors */
+        .card-suscripciones .card-icon { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .card-activas .card-icon { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
+        .card-impago .card-icon { background: linear-gradient(135deg, #eb3349, #f45c43); color: white; }
+        .card-vencer .card-icon { background: linear-gradient(135deg, #f7971e, #ffd200); color: white; }
+        .card-facturas .card-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .card-pendientes .card-icon { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
+
+        /* Navigation */
+        .nav-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .nav-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border-radius: 12px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+        .nav-item:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.02);
+        }
+        .nav-item span { font-size: 24px; margin-right: 15px; }
+        .nav-item strong { font-size: 1rem; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+
+        /* Alert */
+        .alert {
+            background: linear-gradient(135deg, #eb3349, #f45c43);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .alert-icon { font-size: 24px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>RefugioApp</h1>
+            <p>Sistema de Gestion de Suscripciones y Facturacion</p>
+        </div>
+
+        <!-- Alerta si hay impagos -->
+        <div th:if="${suscripcionesImpago > 0}" class="alert">
+            <span class="alert-icon">⚠️</span>
+            <div>
+                <strong>Atencion:</strong> Hay <span th:text="${suscripcionesImpago}">0</span> suscripciones con estado IMPAGO
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="cards-grid">
+            <div class="card card-suscripciones">
+                <div class="card-icon">📋</div>
+                <div class="card-title">Total Suscripciones</div>
+                <div class="card-value" th:text="${totalSuscripciones}">0</div>
+                <div class="card-subtitle">Registradas en el sistema</div>
+            </div>
+
+            <div class="card card-activas">
+                <div class="card-icon">✓</div>
+                <div class="card-title">Suscripciones Activas</div>
+                <div class="card-value" th:text="${suscripcionesActivas}">0</div>
+                <div class="card-subtitle">En funcionamiento</div>
+            </div>
+
+            <div class="card card-impago">
+                <div class="card-icon">!</div>
+                <div class="card-title">Con Impago</div>
+                <div class="card-value" th:text="${suscripcionesImpago}">0</div>
+                <div class="card-subtitle">Requieren atencion</div>
+            </div>
+
+            <div class="card card-vencer">
+                <div class="card-icon">⏰</div>
+                <div class="card-title">Proximas a Vencer</div>
+                <div class="card-value" th:text="${proximasVencer}">0</div>
+                <div class="card-subtitle">En los proximos 7 dias</div>
+            </div>
+
+            <div class="card card-facturas">
+                <div class="card-icon">📄</div>
+                <div class="card-title">Total Facturas</div>
+                <div class="card-value" th:text="${totalFacturas}">0</div>
+                <div class="card-subtitle">Generadas</div>
+            </div>
+
+            <div class="card card-pendientes">
+                <div class="card-icon">💳</div>
+                <div class="card-title">Facturas Pendientes</div>
+                <div class="card-value" th:text="${facturasPendientes}">0</div>
+                <div class="card-subtitle">Por cobrar</div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-section">
+            <h2>Acceso Rapido</h2>
+            <div class="nav-grid">
+                <a href="/suscripciones" class="nav-item">
+                    <span>📋</span>
+                    <strong>Gestionar Suscripciones</strong>
+                </a>
+                <a href="/facturacion" class="nav-item">
+                    <span>📄</span>
+                    <strong>Ver Facturas</strong>
+                </a>
+                <a href="/facturacion/pendientes" class="nav-item">
+                    <span>💳</span>
+                    <strong>Facturas Pendientes</strong>
+                </a>
+                <a href="/facturacion/estadisticas" class="nav-item">
+                    <span>📊</span>
+                    <strong>Estadisticas</strong>
+                </a>
+                <a href="/admin/auditoria" class="nav-item">
+                    <span>🔍</span>
+                    <strong>Panel de Auditoria</strong>
+                </a>
+                <a href="/h2-console" class="nav-item" target="_blank">
+                    <span>🗄️</span>
+                    <strong>Consola H2</strong>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>RefugioApp v2.0 - Semana 2 | Sistema de Gestion de Suscripciones</p>
+        </div>
+    </div>
+</body>
+</html>
+

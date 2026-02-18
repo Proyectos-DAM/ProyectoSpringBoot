@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-// Servicio de auditoría con Hibernate Envers
 @Service
 public class AuditoriaService {
 
