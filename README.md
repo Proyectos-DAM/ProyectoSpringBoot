@@ -146,7 +146,13 @@ Ejecutar: `mvn test`
 
 ## Versión
 
-V2 - Semana 2
+V3 - Semana 3 (Final)
+
+**Cambios principales en V3:**
+- ✅ Tests JUnit (40 casos de prueba documentados)
+- ✅ Mejoras UI/UX (Dashboard, navegación mejorada)
+- ✅ README completo con documentación
+- ✅ Tabla de pruebas y diagrama E-R
 
 ---
 Acceso a Datos - DAM 2025/2026
